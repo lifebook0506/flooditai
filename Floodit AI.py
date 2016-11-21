@@ -30,23 +30,22 @@ def print_Board(board):
 #resulting from it.
 def make_Move(move,board):
     newBoard = deepcopy(board)
-    flood_Fill(board,0,0,move,board[0][0])
+    flood_Fill(newBoard,0,0,move,board[0][0])
     return newBoard
 
 def flood_Fill(board,row,col,move,curVal):
     
-    if move == curVal or board[row][col] != curVal: 
+    if move == curVal or board[row][col] != curVal:
         return
     board[row][col] = move
     if row> 0:
-        flood_Fill(board,curVal,move,row-1,col)
+        flood_Fill(board,row-1,col,move,curVal)
     if row < len(board[0])-1:
-        flood_Fill(board,curVal,move,row+1,col)
+        flood_Fill(board,row+1,col,move,curVal)
     if col > 0:
-        flood_Fill(board,curVal,move,row,col-1)
+        flood_Fill(board,row,col-1,move,curVal)
     if col < len(board)-1:
-        flood_Fill(board,curVal,move,row,col+1)
+        flood_Fill(board,row,col+1,move,curVal)
         
-    newBoard = deepcopy(board)
     
-    return newBoard
+    return board
