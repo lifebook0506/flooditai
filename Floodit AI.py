@@ -30,14 +30,17 @@ def print_Board(board):
 #resulting from it.
 def make_Move(move,board):
     newBoard = deepcopy(board)
-    flood_Fill(newBoard,0,0,move,board[0][0])
-    return newBoard
+    test = flood_Fill(newBoard,0,0,move,board[0][0])
+    #return newBoard
+    return test
+
 
 def flood_Fill(board,row,col,move,curVal):
     
     if move == curVal or board[row][col] != curVal:
-        return
+        return 0
     board[row][col] = move
+    
     if row> 0:
         flood_Fill(board,row-1,col,move,curVal)
     if row < len(board[0])-1:
@@ -49,3 +52,19 @@ def flood_Fill(board,row,col,move,curVal):
         
     
     return board
+
+
+#Returns how many blocks are flooded
+def quantify_Flood(board):
+    count = 0
+    floodVal = board[0][0]
+    return 0
+
+#Sees if board is flooded 
+def victory_Bool(board):
+    for x in range(len(board[0])):
+        for y in range(len(board)):
+            if board[x][y] != board[0][0]:
+                return False
+    return True
+    
