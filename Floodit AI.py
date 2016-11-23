@@ -17,7 +17,8 @@ while True:
 def setup_Board():
     x = int(input("How many columns? "))
     y = int(input("How many rows? "))
-    variables = 6
+    variables = 4
+    
     
     board = [[random.randint(0,variables) for j in range(0,x)] for i in range(0,y)]
     return board
@@ -85,14 +86,34 @@ class Node:
         self.f = depth + cost
 
 
-def flood_Solver(board,variables,limit):
+#======dfs search
+        
+def flood_Solver(board,variables,depth_limit):
     base = Node(board,None,None,0,0)
+    moves = []
+    moves.append(base)
 
+    while True:
+        if len(moves) == 0:
+            return None
+        board = moves.pop(0)
+        print_Board(board.board)
+        print ""
+        if victory_Bool(board.board):
+            
+            print "SOLVED"
+            break
+        if board.depth < depth_limit:
+            expanded_moves = expand_Moves(board,variables)
+            expanded_moves.extend(moves)
+            moves = expanded_moves
+            
+    
 def expand_Moves(node,variables):
     #returns list of all boards(nodes) made with each variable
     branches = []
 
-    for i in range(variables):
+    for i in range(variables+1):
         branches.append(Node(make_Move(i,node.board),node,i,node.depth+1,0))
     branches = [node for node in branches if node.board != None]
     
@@ -113,6 +134,3 @@ def main():
         print_Board(move.board)
         print ""
 
-
-
-    
