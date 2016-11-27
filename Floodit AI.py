@@ -1,24 +1,53 @@
 import sys, time, random
-#import pygame
-#from pygame.locals import *
+import pygame
+from pygame.locals import *
 from copy import deepcopy
 
-'''pygame.init()
-DISPLAYSURF = pygame.display.set_mode((400,300))
-pygame.display.set_caption('Hello World!')
-while True:
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-        pygame.display.update()
+#initialization variabls
+
+TILESIZE = 60
+TURNS = 30
+
+#Colors   R   G   B
+WHITE = (255,255,255)
+RED   = (255, 0,   0)
+GREEN = (  0,255,  0)
+BLUE  = (  0,  0,255)
+YELLOW= (255,255,  0)
+ORANGE= (255,128,  0)
+PURPLE= (255,  0,255)
 '''
-#Barebones board display and setup. In place of a grid of colors, returns an array of integers
-def setup_Board():
-    x = int(input("How many columns? "))
-    y = int(input("How many rows? "))
-    variables = 4
+def main():
+    pygame.init()
+    DISPLAYSURF = pygame.display.set_mode((640,640))
+    pygame.display.set_caption('Flood-it AI')
+
+    homeBoard = gen_Board(14,14)
+
+
+
+def gen_Board(x,y):
+    board = [[random.randint(0,variables) for j in range(0,x)] for i in range(0,y)]
+    return board
+
+def show_Board(board):
+    tempSurf = pygame.Surface(DISPLAYSURF.get_size())
+    tempSurf = tempSurf.convert_alpha()
+    tempSurf.fill((0,0,0,0))
+
+    for x in range(len(board[0])):
+        for y in range(len(board)):
+            l,t = home_Pixel(x,y)
+            r,g,b = 0
+            '''
     
+
+
+#=============================================
+#TEST BOARD FUNCTIONS
+#Barebones board display and setup. In place of a grid of colors, returns an array of integers
+#=============================================
+def setup_Board(x,y,variables): 
     
     board = [[random.randint(0,variables) for j in range(0,x)] for i in range(0,y)]
     return board
@@ -39,7 +68,7 @@ def make_Move(move,board):
 def flood_Fill(board,row,col,move,curVal):
     #fills board with move returns None if move is the same as current home    
     if move == curVal or board[row][col] != curVal:
-        return None
+        return
     board[row][col] = move
     
     if row> 0:
@@ -51,8 +80,28 @@ def flood_Fill(board,row,col,move,curVal):
     if col < len(board)-1:
         flood_Fill(board,row,col+1,move,curVal)
         
-    
     return board
+
+def flood_Count(board,row,col,move,curVal):
+    #counts flooded tiles from move
+    countboard = deepcopy(board)
+    count = 0
+    if countboard[row][col] == move:
+        return 1
+    
+    #countboard[row][col] = move
+    
+    
+    if row> 0:
+        count += flood_Count(countboard,row-1,col,move,curVal)
+    if row < len(board[0])-1:
+        count += flood_Count(countboard,row+1,col,move,curVal)
+    if col > 0:
+        count += flood_Count(countboard,row,col-1,move,curVal)
+    elif col < len(board)-1:
+        count += flood_Count(countboard,row,col+1,move,curVal)
+        
+    return count
 
 #Sees if board is flooded 
 def victory_Bool(board):
@@ -95,7 +144,9 @@ def flood_Solver(board,variables,depth_limit):
 
     while True:
         if len(moves) == 0:
-            return None
+            print "NO SOLUTION FOUND"
+            break
+            
         board = moves.pop(0)
         print_Board(board.board)
         print ""
@@ -120,17 +171,10 @@ def expand_Moves(node,variables):
     return branches
 
 def main():
-    home = setup_Board()
-    variables = 6
-
+    home = setup_Board(4,4,5)
+    print "Base Board"
     print_Board(home)
-    print("Ready for move")
+    flood_Solver(home,5,30)
 
-    homeNode = Node(home,None,None,0,0)
-    moveSet = expand_Moves(homeNode,6)
 
-    print "Branches"
-    for move in moveSet:
-        print_Board(move.board)
-        print ""
-
+    
