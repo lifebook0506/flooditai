@@ -64,6 +64,11 @@ def make_Move(move,board):
     #return newBoard
     return newBoard
 
+def return_Heur(move,board):
+    newBoard = deepcopy(board)
+    newBoard = make_Move(move,newBoard)
+    h = flood_Count(newBoard,0,0,newBoard[0][0],move,[])
+    return len(h)
 
 def flood_Fill(board,row,col,move,curVal):
     #fills board with move returns None if move is the same as current home    
@@ -84,10 +89,16 @@ def flood_Fill(board,row,col,move,curVal):
 
 def flood_Count(board,row,col,move,curVal,filledTiles):
     board = deepcopy(board)
-    if move == curVal or board[row][col] != curVal:
+    if move == curVal:
+        if (row,col) in filledTiles:
+            return
+        else:
+            filledTiles.append((row,col))
+    elif board[row][col] != curVal:
         return
     board[row][col] = move
-    filledTiles.append((row,col))
+    if (row,col) not in filledTiles:
+        filledTiles.append((row,col))
     
     if row> 0:
         flood_Count(board,row-1,col,move,curVal,filledTiles)
