@@ -82,26 +82,23 @@ def flood_Fill(board,row,col,move,curVal):
         
     return board
 
-def flood_Count(board,row,col,move,curVal):
-    #counts flooded tiles from move
-    countboard = deepcopy(board)
-    count = 0
-    if countboard[row][col] == move:
-        return 1
-    
-    #countboard[row][col] = move
-    
+def flood_Count(board,row,col,move,curVal,filledTiles):
+    board = deepcopy(board)
+    if move == curVal or board[row][col] != curVal:
+        return
+    board[row][col] = move
+    filledTiles.append((row,col))
     
     if row> 0:
-        count += flood_Count(countboard,row-1,col,move,curVal)
+        flood_Count(board,row-1,col,move,curVal,filledTiles)
     if row < len(board[0])-1:
-        count += flood_Count(countboard,row+1,col,move,curVal)
+        flood_Count(board,row+1,col,move,curVal,filledTiles)
     if col > 0:
-        count += flood_Count(countboard,row,col-1,move,curVal)
+        flood_Count(board,row,col-1,move,curVal,filledTiles)
     elif col < len(board)-1:
-        count += flood_Count(countboard,row,col+1,move,curVal)
-        
-    return count
+        flood_Count(board,row,col+1,move,curVal,filledTiles)
+
+    return filledTiles
 
 #Sees if board is flooded 
 def victory_Bool(board):
