@@ -64,11 +64,6 @@ def make_Move(move,board):
     #return newBoard
     return newBoard
 
-def return_Heur(move,board):
-    newBoard = deepcopy(board)
-    newBoard = make_Move(move,newBoard)
-    h = flood_Count(newBoard,0,0,newBoard[0][0],move,[])
-    return len(h)
 
 def flood_Fill(board,row,col,move,curVal):
     #fills board with move returns None if move is the same as current home    
@@ -86,6 +81,15 @@ def flood_Fill(board,row,col,move,curVal):
         flood_Fill(board,row,col+1,move,curVal)
         
     return board
+
+#========================
+#very greedy and cobbled together heuristic
+#counts tiles changed from previous move
+def return_Heur(move,board):
+    newBoard = deepcopy(board)
+    newBoard = make_Move(move,newBoard)
+    h = flood_Count(newBoard,0,0,newBoard[0][0],move,[])
+    return len(h)
 
 def flood_Count(board,row,col,move,curVal,filledTiles):
     board = deepcopy(board)
@@ -142,6 +146,13 @@ class Node:
         self.cost = cost
         self.f = depth + cost
 
+def findHighF(nodes):
+    highest = nodes[0]
+    for node in nodes:
+        if node.f > highest.f:
+            highest = node
+    return highest
+
 
 #======dfs search
         
@@ -166,8 +177,54 @@ def flood_Solver(board,variables,depth_limit):
             expanded_moves = expand_Moves(board,variables)
             expanded_moves.extend(moves)
             moves = expanded_moves
-            
-    
+
+#==============================
+#A* search with greedy heuristic
+#==============================
+def flood_Huerist(board,variables,depth_limit):
+    base = Node(board,None,None,0,return_Heur(board[0][0],board))
+    openNodes = []
+    closNodes = []
+
+    openNodes.append(base)
+
+    while openNodes >= 0:
+        if limit == 0:
+            print "max turns reached"
+            break
+        if len(openNodes) == 0:
+            break
+        #find highest f value in open nodes
+        current_Node = findHighF(openNodes)
+        closNodes.append(current_Node)
+
+        #check to stop
+        if victory_Bool(current_Node.board):
+            print_Board(current_Node.board)
+            print "SOLVED"
+
+        limit = limit -1
+        openNodes.remove(current_Node)
+        closNodes.append(current_Node)
+
+        #generate new set of successors
+        successors = expand_Moves(current_Node,variables)
+
+        for successor in successors:
+            if successor in closNodes:
+                continue
+            curScore = current_Node.depth + 1
+            if succssor not in openNodes:
+                openNodes.append(successor)
+            elif curScore >= successor.depth:
+                continue
+
+            successor.depth = curScore
+            successor.f = successor.depth + return_Heur(successor.parent[0][0]
+                                                        ,successor.board)
+
+
+
 def expand_Moves(node,variables):
     #returns list of all boards(nodes) made with each variable
     branches = []
@@ -183,6 +240,3 @@ def main():
     print "Base Board"
     print_Board(home)
     flood_Solver(home,5,30)
-
-
-    
