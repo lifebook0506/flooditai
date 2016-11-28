@@ -85,18 +85,6 @@ def victory_Bool(board):
     return True
 
 
-#=============================
-#NOT DONE
-#=============================
-#Returns how many blocks are flooded
-def quantify_Flood(board):
-    count = 0
-    floodVal = board[0][0]
-    return 0
-
-
-
-
 #Node will hold floodit state to be used in the search functions
 class Node:
     def __init__(self,board,parent,move,depth,cost):
@@ -115,8 +103,9 @@ def findHighF(nodes):
     return highest
 
 
-#======dfs search
-        
+#=====================================
+#Brute force dfs search
+#=====================================
 def flood_Solver(board,variables,depth_limit):
     base = Node(board,None,None,0,0)
     moves = []
@@ -241,4 +230,7 @@ def show_Board(board):
             l,t = home_Pixel(x,y)
             r,g,b = 0
             '''
+    
+
+
     
