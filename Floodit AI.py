@@ -27,11 +27,14 @@ def make_Move(move,board):
 
 
 def flood_Fill(board,row,col,move,curVal):
-    #fills board with move returns None if move is the same as current home    
+    #fills board with move     
     if move == curVal or board[row][col] != curVal:
         return
     board[row][col] = move
-    
+
+    if (row,col) not in filledTiles:
+        filledTiles.append((row,col))
+        
     if row> 0:
         flood_Fill(board,row-1,col,move,curVal)
     if row < len(board[0])-1:
@@ -42,39 +45,18 @@ def flood_Fill(board,row,col,move,curVal):
         flood_Fill(board,row,col+1,move,curVal)
         
     return board
+#global variable to be edited by flood_Fill
+filledTiles = []
 
 #========================
 #very greedy and cobbled together heuristic
-#counts tiles changed from previous move
-def return_Heur(move,board):
+#counts tiles filled from base pos
+#creates arbitrary move and counts tiles changed by it
+def return_Heur(board):
     newBoard = deepcopy(board)
-    newBoard = make_Move(move,newBoard)
-    h = flood_Count(newBoard,0,0,newBoard[0][0],move,[])
-    return len(h)
+    newBoard = make_Move(100,newBoard)
+    return len(filledTiles)
 
-def flood_Count(board,row,col,move,curVal,filledTiles):
-    board = deepcopy(board)
-    if move == curVal:
-        if (row,col) in filledTiles:
-            return
-        else:
-            filledTiles.append((row,col))
-    elif board[row][col] != curVal:
-        return
-    board[row][col] = move
-    if (row,col) not in filledTiles:
-        filledTiles.append((row,col))
-    
-    if row> 0:
-        flood_Count(board,row-1,col,move,curVal,filledTiles)
-    if row < len(board[0])-1:
-        flood_Count(board,row+1,col,move,curVal,filledTiles)
-    if col > 0:
-        flood_Count(board,row,col-1,move,curVal,filledTiles)
-    elif col < len(board)-1:
-        flood_Count(board,row,col+1,move,curVal,filledTiles)
-
-    return filledTiles
 
 #Sees if board is flooded 
 def victory_Bool(board):
@@ -131,8 +113,8 @@ def flood_Solver(board,variables,depth_limit):
 #==============================
 #A* search with greedy heuristic
 #==============================
-def flood_Huerist(board,variables,depth_limit):
-    base = Node(board,None,None,0,return_Heur(board[0][0],board))
+def flood_Huerist(board,variables,limit):
+    base = Node(board,None,None,0,return_Heur(board))
     openNodes = []
     closNodes = []
 
@@ -147,16 +129,18 @@ def flood_Huerist(board,variables,depth_limit):
         #find highest f value in open nodes
         current_Node = findHighF(openNodes)
         closNodes.append(current_Node)
-
+        print ""
+        print_Board(current_Node.board)
         #check to stop
         if victory_Bool(current_Node.board):
             print_Board(current_Node.board)
             print "SOLVED"
+            break
 
         limit = limit -1
         openNodes.remove(current_Node)
         closNodes.append(current_Node)
-
+        
         #generate new set of successors
         successors = expand_Moves(current_Node,variables)
 
@@ -164,14 +148,13 @@ def flood_Huerist(board,variables,depth_limit):
             if successor in closNodes:
                 continue
             curScore = current_Node.depth + 1
-            if succssor not in openNodes:
+            if successor not in openNodes:
                 openNodes.append(successor)
             elif curScore >= successor.depth:
                 continue
 
             successor.depth = curScore
-            successor.f = successor.depth + return_Heur(successor.parent[0][0]
-                                                        ,successor.board)
+            successor.f = successor.depth + return_Heur(successor.board)
 
 
 
@@ -190,6 +173,7 @@ def main():
     print "Base Board"
     print_Board(home)
     flood_Solver(home,5,30)
+
 
 
 #Pretty pygame stuff. No time to finish
@@ -230,7 +214,3 @@ def show_Board(board):
             l,t = home_Pixel(x,y)
             r,g,b = 0
             '''
-    
-
-
-    
