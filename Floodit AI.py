@@ -172,45 +172,4 @@ def main():
     home = setup_Board(4,4,5)
     print "Base Board"
     print_Board(home)
-    flood_Solver(home,5,30)
-
-
-
-#Pretty pygame stuff. No time to finish
-'''#initialization variabls
-
-TILESIZE = 60
-TURNS = 30
-
-#Colors   R   G   B
-WHITE = (255,255,255)
-RED   = (255, 0,   0)
-GREEN = (  0,255,  0)
-BLUE  = (  0,  0,255)
-YELLOW= (255,255,  0)
-ORANGE= (255,128,  0)
-PURPLE= (255,  0,255)
-
-def main():
-    pygame.init()
-    DISPLAYSURF = pygame.display.set_mode((640,640))
-    pygame.display.set_caption('Flood-it AI')
-
-    homeBoard = gen_Board(14,14)
-
-
-
-def gen_Board(x,y):
-    board = [[random.randint(0,variables) for j in range(0,x)] for i in range(0,y)]
-    return board
-
-def show_Board(board):
-    tempSurf = pygame.Surface(DISPLAYSURF.get_size())
-    tempSurf = tempSurf.convert_alpha()
-    tempSurf.fill((0,0,0,0))
-
-    for x in range(len(board[0])):
-        for y in range(len(board)):
-            l,t = home_Pixel(x,y)
-            r,g,b = 0
-            '''
+    flood_Huerist(home,5,100)
