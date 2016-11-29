@@ -185,7 +185,11 @@ def expand_Moves(node,variables):
     return branches
 
 def main():
-    home = setup_Board(14,14,4)
+    home = setup_Board(14,14,5)
     print "Starting board"
     print_Board(home)
-    flood_Huerist(home,4,1000)
+    print ""
+    flood_Huerist(home,5,1000)
+
+if __name__ == "__main__":
+    main()
