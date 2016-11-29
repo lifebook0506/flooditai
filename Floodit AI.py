@@ -55,7 +55,8 @@ filledTiles = []
 def return_Heur(board):
     newBoard = deepcopy(board)
     newBoard = make_Move(100,newBoard)
-    return len(filledTiles)
+    maxFill = len(board) * len(board[0])
+    return maxFill - len(filledTiles)
 
 
 #Sees if board is flooded 
@@ -77,13 +78,12 @@ class Node:
         self.cost = cost
         self.f = depth + cost
 
-def findHighF(nodes):
-    highest = nodes[0]
+def findLowF(nodes):
+    lowest = nodes[0]
     for node in nodes:
-        if node.f > highest.f:
-            highest = node
-    return highest
-
+        if node.f < lowest.f:
+            lowest = node
+    return lowest
 
 #=====================================
 #Brute force dfs search
@@ -127,14 +127,14 @@ def flood_Huerist(board,variables,limit):
         if len(openNodes) == 0:
             break
         #find highest f value in open nodes
-        current_Node = findHighF(openNodes)
+        current_Node = findLowF(openNodes)
         closNodes.append(current_Node)
-        print ""
-        print_Board(current_Node.board)
+        
         #check to stop
         if victory_Bool(current_Node.board):
-            print_Board(current_Node.board)
+            draw_Moves(current_Node)
             print "SOLVED"
+            print_Board(current_Node.board)
             break
 
         limit = limit -1
@@ -158,6 +158,22 @@ def flood_Huerist(board,variables,limit):
 
 
 
+finalMoves = []
+def draw_Moves(node):
+    if node.parent == None:
+         
+         print_Moves(finalMoves,node.board)
+    else:
+        finalMoves.append(node.move)
+        draw_Moves(node.parent)
+
+def print_Moves(moveList,board):
+    moveList = finalMoves[::-1]
+    for i in moveList:
+        board = make_Move(i,board)
+        print_Board(board)
+        print ""
+    print "Move list: " + str(moveList)    
 def expand_Moves(node,variables):
     #returns list of all boards(nodes) made with each variable
     branches = []
@@ -169,7 +185,7 @@ def expand_Moves(node,variables):
     return branches
 
 def main():
-    home = setup_Board(4,4,5)
-    print "Base Board"
+    home = setup_Board(14,14,4)
+    print "Starting board"
     print_Board(home)
-    flood_Huerist(home,5,100)
+    flood_Huerist(home,4,1000)
